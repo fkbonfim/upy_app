@@ -70,6 +70,11 @@ def deep_copy_folder(src, dest):
             copy_file(psrc, pdest)
 
 def deep_delete_folder(path):
+    try:
+        os.ilistdir(path)
+    except:
+        return
+
     for f in os.ilistdir(path):
         ppath = "{}/{}".format(path, f[0])
         if f[1] == 0x4000:
@@ -83,6 +88,8 @@ def deep_delete_folder(path):
                 os.remove(ppath)
             except:
                 pass
+
+
     try:
         os.rmdir(path)
     except:

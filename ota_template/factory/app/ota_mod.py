@@ -23,7 +23,7 @@ class OtaServerActivate:
 
         # To Do: from config file
         #addr = "http://192.168.100.173"
-        addr = "http://192.168.10.113"
+        addr = "http://192.168.254.1"
         port = "8080"
 
         url = "{}:{}/updatemeta/{}".format(addr, port, self.board)

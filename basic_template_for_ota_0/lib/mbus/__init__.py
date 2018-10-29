@@ -18,7 +18,7 @@ class MbusManager:
         self.mpub = []
         self.run = False
         self.m_addr = "MQTT->"
-
+        self.msg_sz = len(self.m_addr)
 
     def start(self):
         loop = asyncio.get_event_loop()
@@ -43,10 +43,17 @@ class MbusManager:
                     func = value["func"]
                     sub_id = value["id"]
 
-                    msg_sz = len(self.m_addr)
+
+
+                    #mqtt trasport
                     msg_id = message["id"]
-                    if msg_id[:msg_sz] == self.m_addr:
-                        msg_id = msg_id[msg_sz:]
+                    if msg_id[:self.msg_sz] == self.m_addr:
+                        # not send to trasnport again
+                        if key[:1] == "_" and sub_id == "ALL":
+                            sub_id = "_ALL"
+                        msg_id = msg_id[self.msg_sz:]
+
+
 
                     if sub_id == msg_id or sub_id == "ALL":
                         if sub_id == "ALL":

@@ -8,6 +8,8 @@ print("Wait 5sec - Safe Mode")
 sleep(5)
 print("Pin State: {}".format(safe_pin.value()))
 if safe_pin.value() == 1:
+    led_pin = Pin(2, Pin.OUT)
+    led_pin.value(1)
     esp.ota_set_bootpart("factory")
     reset()
 sleep(5)

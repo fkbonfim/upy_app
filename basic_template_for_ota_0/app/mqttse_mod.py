@@ -12,7 +12,7 @@ class MQTTClientActivate:
 
         mbus.sub("MQTTSE_WiFi", {"id": "WIFI", "func": self._mqtt_activate})
 
-        mbus.sub("MQTTSE_A", {"id": "ALL", "func": self._mqtt_pub})
+        mbus.sub("_MQTTSE_A", {"id": "ALL", "func": self._mqtt_pub})
         mbus.sub("MQTTSE_T", {"id": "TOPIC", "func": self._mqtt_topic})
 
     def _mqtt_topic(self, key, msg):

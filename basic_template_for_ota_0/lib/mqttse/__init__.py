@@ -88,17 +88,17 @@ class MQTTClient:
         t = ticks_ms()
         while len(data) < n:
             if self._timeout(t):
-                raise OSError(-1)
+                return b''
             try:
                 msg = sock.read(n - len(data))
             except OSError as e:  # ESP32 issues weird 119 errors here
                 msg = None
                 if e.args[0] not in BUSY_ERRORS:
                     self.status = 0
-                    raise
+                    return b''
 
             if msg == b'':  # Connection closed by host (?)
-                raise OSError(-1)
+                return b''
 
             if msg is not None:  # data received
                 data = b''.join((data, msg))
@@ -375,7 +375,7 @@ class MQTTClient:
                     result = await self.publish(topic, msg, retain)
 
                     # result = await self.publish(b"devices/test/ping", "1")
-                    del self.mqtt_bus[key]
+                del self.mqtt_bus[key]
                     # if result:
                     #     del self.mqtt_bus[key]
 
