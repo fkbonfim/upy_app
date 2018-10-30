@@ -7,6 +7,7 @@ import ubinascii
 import machine, _thread
 
 
+
 from mbus import MbusManager
 # log = logging.getLogger("MBUS")
 # log.setLevel(logging.DEBUG)
@@ -16,17 +17,24 @@ from ftpse_mod import FTPServerActivate
 
 from heartbeat_mod import HeartbeatActivate
 
-import logging
-log = logging.getLogger("FTPSE")
-log.setLevel(logging.INFO)
+# import logging
+# log = logging.getLogger("FTPSE")
+# log.setLevel(logging.DEBUG)
 
 # import logging
 # log = logging.getLogger("WIFI")
 # log.setLevel(logging.DEBUG)
 
+async def run_wdt():
+    wdt = machine.WDT(timeout=60000)
+    print("WDT RUN")
+    while True:
+        wdt.feed()
+        await asyncio.sleep(20)
 
-# def print_mbus(key, msg):
-#     print("MAIN: {} - {}".format(key, msg))
+
+def print_mbus(key, msg):
+    print("MAIN: {} - {}".format(key, msg))
 
 
 def main():
@@ -37,26 +45,29 @@ def main():
     
     mbus = MbusManager()
     mbus.start()
+    
 
-    # mbus.sub("MAIN", {"type": "ALL", "func": print_mbus})
+    mbus.sub("MAIN", {"id": "ALL", "func": print_mbus})
+
 
     # Core
     WiFiActivate(mbus)
-
     FTPServerActivate(mbus)
-
+    
     from telnetse_mod import TelnetServerActivate
     TelnetServerActivate(mbus)
 
     HeartbeatActivate(mbus)
 
     # App mod
+    # Relay
     try:
         from relay_control_mod import RelayControlActivate
         RelayControlActivate(mbus)
     except Exception as e:
         print("REL exception .. {}".format(e))
 
+    # Button
     try:
         from button_control_mod import ButtonControlActivate
         ButtonControlActivate(mbus)
@@ -102,17 +113,12 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    loop.create_task(run_wdt)
+    # WDT
+    loop.create_task(run_wdt())
 
     _ = _thread.stack_size(8 * 1024)
     _thread.start_new_thread(loop.run_forever, ())
 
-
-async def run_wdt():
-    wdt = machine.WDT(timout_ms=20000)
-    while True:
-        wdt.feed()
-        await asyncio.sleep(10)
 
 
 if __name__ == '__main__':
